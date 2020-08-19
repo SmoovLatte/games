@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import MemoryCard from "./MemoryCard";
 import StatusBar from "./StatusBar";
 import "./index.css";
@@ -31,13 +31,6 @@ function generateCards() {
   return cards.sort(() => Math.random() - 0.5);
 }
 
-// setCards((oldCards) =>
-// oldCards.map((oldCard) => {
-//   if (oldCard.key === card.key)
-//   return { ...oldCard, isFlipped: !card.isFlipped }; /*don't flip bakc here if firstcard.key == secondCard.key */
-//   return oldCard;
-// })
-// );
 function flipCard(cards, cardToFlip) {
   return cards.map((card) => {
     if (card.key === cardToFlip.key) {
@@ -48,12 +41,33 @@ function flipCard(cards, cardToFlip) {
 }
 
 function Memory() {
+  // const startTime = Date.now();
+  // setInterval(() => console.log(Date.now() - startTime), 1000);
+
   const [game, setGame] = useState({
     cards: generateCards(),
     firstCard: undefined,
     secondCard: undefined,
   });
 
+  const [startTime, setStartTime] = useState(0);
+  const [elapsedTime, setElapsedTime] = useState(0);
+  //useState(effect function> dependency array > - optional)
+  // dependency array>
+  //*undefined: effect function will be run on every render
+  // * []: effect will run only on the first render
+  //* [value2, value2]: effect will run when any of the values change
+  //effect function returns a cleanup function (optional)
+  //unmounts (disappears from the DOM)
+  useEffect(() => {
+    if (startTime !== 0) {
+      const intervalId = setInterval(() => {
+        console.log(startTime);
+        setElapsedTime(Date.now() - startTime);
+      }, 1000);
+      return () => clearInterval(intervalId);
+    }
+  }, [startTime]);
   // const cards = generateCards();
   // const status = "Time: 0s";
 
@@ -88,7 +102,7 @@ function Memory() {
           firstCard: firstCard,
           secondCard: clickedCard,
         };
-      } else if (secondCard.color == firstCard.color) {
+      } else if (secondCard.color === firstCard.color) {
         //Else, if the previous two clicked cards have the same color =>
         // we should flip the clicked card, set the new firstCard and remove secondCard from the state
 
@@ -124,20 +138,28 @@ function Memory() {
       // );
       // console.log("not flipped");
     });
+    setStartTime((oldStartTime) =>
+      oldStartTime === 0 ? Date.now() : oldStartTime
+    );
   }
 
   function onRestart() {
-    setGame = useState({
+    setGame({
       cards: generateCards(),
       firstCard: undefined,
       secondCard: undefined,
     });
+    setStartTime(0);
+    setElapsedTime(0);
   }
 
   return (
     <div>
       <div className="game-container">
-        <StatusBar status={status} onRestart={onRestart}></StatusBar>
+        <StatusBar
+          status={"Time: " + elapsedTime}
+          onRestart={onRestart}
+        ></StatusBar>
         <div className="memory-grid">
           {game.cards.map((card) => (
             <MemoryCard

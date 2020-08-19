@@ -5,6 +5,7 @@
 .status-bar {
   display: flex;
   align-items: center;
+  color: aqua;
 }
 .status {
   flex: 1;
