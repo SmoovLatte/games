@@ -52,6 +52,8 @@ function Memory() {
 
   const [startTime, setStartTime] = useState(0);
   const [elapsedTime, setElapsedTime] = useState(0);
+  const [win, setWin] = useState(false);
+
   //useState(effect function> dependency array > - optional)
   // dependency array>
   //*undefined: effect function will be run on every render
@@ -78,6 +80,10 @@ function Memory() {
     // We should return the new state, depending on the previous one and on the card that was clicked.
     // There are 4 different cases.
 
+    // add a new state variable win to indicate whether the game is won
+    // set win to true when all the cards have become flipped (find a good place for it in the onCardFlipped function)
+    // modify one of the useEffect hooks to also watch win, so that its cleanup function runs when win changes
+    // reset the win variable in onRestart
     if (clickedCard.isFlipped) {
       return;
     }
@@ -97,8 +103,13 @@ function Memory() {
         // 2. Else, if firstCard is defined, but secondCard isn't =>
         // we should flip the clicked card, keep the firstCard as is, but set the secondCard
       } else if (secondCard == undefined) {
+        let newCards = flipCard(cards, clickedCard);
+        if (newCards.every((card) => card.isFlipped)) {
+          setWin(true);
+          console.log("You won!");
+        }
         return {
-          cards: flipCard(cards, clickedCard),
+          cards: newCards,
           firstCard: firstCard,
           secondCard: clickedCard,
         };
@@ -111,6 +122,7 @@ function Memory() {
           firstCard: clickedCard,
           secondCard: undefined,
         };
+        //if all cards.is flipped == true {game.win = true}
       } else {
         // 4. Else, if the previous two clicked cards have different colors =>
         // we should flip the clicked card and flip back firstCard and secondCard,
@@ -151,6 +163,7 @@ function Memory() {
     });
     setStartTime(0);
     setElapsedTime(0);
+    setWin(false);
   }
 
   return (
