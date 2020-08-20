@@ -62,14 +62,14 @@ function Memory() {
   //effect function returns a cleanup function (optional)
   //unmounts (disappears from the DOM)
   useEffect(() => {
-    if (startTime !== 0) {
+    if (startTime !== 0 && !win) {
       const intervalId = setInterval(() => {
         console.log(startTime);
         setElapsedTime(Date.now() - startTime);
       }, 1000);
       return () => clearInterval(intervalId);
     }
-  }, [startTime]);
+  }, [startTime, win]);
   // const cards = generateCards();
   // const status = "Time: 0s";
 
@@ -169,10 +169,7 @@ function Memory() {
   return (
     <div>
       <div className="game-container">
-        <StatusBar
-          status={"Time: " + elapsedTime}
-          onRestart={onRestart}
-        ></StatusBar>
+        <StatusBar status={`Time: ${elapsedTime}ms`} onRestart={onRestart} />
         <div className="memory-grid">
           {game.cards.map((card) => (
             <MemoryCard
