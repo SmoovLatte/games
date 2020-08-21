@@ -96,8 +96,6 @@ function generateNewTail(oldSnake, oldFood, newHead) {
   newTail = newTail.concat(oldSnake.tail);
   //concat does not mutate the obj but returns the result so it must be saved in a variable!
 
-  console.log(newTail);
-
   if (!isEqual(newHead, oldFood)) {
     newTail.pop();
     //mutates the object
